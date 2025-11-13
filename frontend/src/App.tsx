@@ -13,6 +13,8 @@ import DashboardPage from './pages/student/DashboardPage'
 import CoursesPage from './pages/courses/CoursesPage'
 import CourseDetailPage from './pages/courses/CourseDetailPage'
 import LearningPage from './pages/courses/LearningPage'
+import QuizPage from './pages/quiz/QuizPage'
+import QuizResultsPage from './pages/quiz/QuizResultsPage'
 import TeacherDashboardPage from './pages/teacher/TeacherDashboardPage'
 import CreateCoursePage from './pages/teacher/CreateCoursePage'
 import ProfilePage from './pages/ProfilePage'
@@ -56,6 +58,14 @@ function App() {
           <Route
             path="profile"
             element={user ? <ProfilePage /> : <Navigate to="/auth/login" />}
+          />
+          <Route
+            path="quiz/:id"
+            element={user ? <QuizPage /> : <Navigate to="/auth/login" />}
+          />
+          <Route
+            path="quiz/:id/results"
+            element={user ? <QuizResultsPage /> : <Navigate to="/auth/login" />}
           />
 
           {/* Teacher routes */}
