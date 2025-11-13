@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useAuthStore } from '@/store/authStore'
-import { BookOpen, User, LogOut, Home, BookMarked, Sparkles } from 'lucide-react'
+import { BookOpen, User, LogOut, Home, BookMarked, Sparkles, Award } from 'lucide-react'
 
 const Navbar = () => {
   const { user, isAuthenticated, logout } = useAuthStore()
@@ -30,9 +30,15 @@ const Navbar = () => {
               <span>Learning Hub</span>
             </Link>
             {isAuthenticated && (
-              <Link to="/dashboard" className="text-gray-700 hover:text-primary-600 transition">
-                Dashboard
-              </Link>
+              <>
+                <Link to="/certificates" className="flex items-center space-x-1 text-gray-700 hover:text-primary-600 transition">
+                  <Award className="w-4 h-4" />
+                  <span>Certificates</span>
+                </Link>
+                <Link to="/dashboard" className="text-gray-700 hover:text-primary-600 transition">
+                  Dashboard
+                </Link>
+              </>
             )}
           </div>
 

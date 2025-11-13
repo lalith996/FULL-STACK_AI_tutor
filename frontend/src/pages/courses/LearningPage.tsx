@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'react-hot-toast'
 import { courseService } from '@/services/courseService'
 import { progressService } from '@/services/progressService'
+import VideoPlayer from '@/components/video/VideoPlayer'
 import {
   ChevronLeft,
   ChevronRight,
@@ -236,17 +237,30 @@ const LearningPage = () => {
           <div className="max-w-5xl mx-auto p-6">
             {/* Video/Content Display */}
             {currentLesson.type === 'video' ? (
-              <div className="bg-black rounded-lg mb-6 aspect-video flex items-center justify-center">
-                <div className="text-center text-white">
-                  <PlayCircle className="w-16 h-16 mx-auto mb-4 text-primary-400" />
-                  <p className="text-lg mb-2">Video Player</p>
-                  <p className="text-sm text-gray-400">
-                    Video URL: {currentLesson.content}
-                  </p>
-                  <p className="text-xs text-gray-500 mt-2">
-                    (Video player integration coming soon)
-                  </p>
-                </div>
+              <div className="mb-6">
+                {currentLesson.content ? (
+                  <VideoPlayer
+                    url={currentLesson.content}
+                    title={currentLesson.title}
+                    onProgress={(progress) => {
+                      // Auto-complete when video reaches 90%
+                      if (progress >= 90 && !isLessonCompleted) {
+                        handleCompleteLesson()
+                      }
+                    }}
+                    onComplete={!isLessonCompleted ? handleCompleteLesson : undefined}
+                  />
+                ) : (
+                  <div className="bg-black rounded-lg aspect-video flex items-center justify-center">
+                    <div className="text-center text-white">
+                      <PlayCircle className="w-16 h-16 mx-auto mb-4 text-primary-400" />
+                      <p className="text-lg mb-2">No Video URL Provided</p>
+                      <p className="text-sm text-gray-400">
+                        The instructor hasn't added a video for this lesson yet.
+                      </p>
+                    </div>
+                  </div>
+                )}
               </div>
             ) : (
               <div className="bg-white rounded-lg p-8 mb-6">

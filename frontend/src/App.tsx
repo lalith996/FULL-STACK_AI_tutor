@@ -28,8 +28,13 @@ const QuizPage = lazy(() => import('./pages/quiz/QuizPage'))
 const QuizResultsPage = lazy(() => import('./pages/quiz/QuizResultsPage'))
 const TeacherDashboardPage = lazy(() => import('./pages/teacher/TeacherDashboardPage'))
 const CreateCoursePage = lazy(() => import('./pages/teacher/CreateCoursePage'))
+const ManageCoursesPage = lazy(() => import('./pages/teacher/ManageCoursesPage'))
+const EditCoursePage = lazy(() => import('./pages/teacher/EditCoursePage'))
+const QuizBuilderPage = lazy(() => import('./pages/teacher/QuizBuilderPage'))
 const ProfilePage = lazy(() => import('./pages/ProfilePage'))
 const InteractiveLearningHub = lazy(() => import('./pages/InteractiveLearningHub'))
+const CertificatesPage = lazy(() => import('./pages/CertificatesPage'))
+const CertificateViewPage = lazy(() => import('./pages/CertificateViewPage'))
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'))
 
 function App() {
@@ -81,12 +86,38 @@ function App() {
               path="quiz/:id/results"
               element={user ? <QuizResultsPage /> : <Navigate to="/auth/login" />}
             />
+            <Route
+              path="certificates"
+              element={user ? <CertificatesPage /> : <Navigate to="/auth/login" />}
+            />
+            <Route
+              path="certificate/:certificateId"
+              element={<CertificateViewPage />}
+            />
 
             {/* Teacher routes */}
             <Route
               path="teacher/create-course"
               element={
                 user?.role === 'teacher' ? <CreateCoursePage /> : <Navigate to="/dashboard" />
+              }
+            />
+            <Route
+              path="teacher/manage-courses"
+              element={
+                user?.role === 'teacher' ? <ManageCoursesPage /> : <Navigate to="/dashboard" />
+              }
+            />
+            <Route
+              path="teacher/edit-course/:id"
+              element={
+                user?.role === 'teacher' ? <EditCoursePage /> : <Navigate to="/dashboard" />
+              }
+            />
+            <Route
+              path="teacher/quiz-builder/:courseId?"
+              element={
+                user?.role === 'teacher' ? <QuizBuilderPage /> : <Navigate to="/dashboard" />
               }
             />
           </Route>
