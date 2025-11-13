@@ -1,8 +1,12 @@
 import { Outlet } from 'react-router-dom'
 import Navbar from './Navbar'
 import Footer from './Footer'
+import AIChatbot from '../ai/AIChatbot'
+import { useAuthStore } from '@/store/authStore'
 
 const MainLayout = () => {
+  const { isAuthenticated } = useAuthStore()
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
@@ -10,6 +14,7 @@ const MainLayout = () => {
         <Outlet />
       </main>
       <Footer />
+      {isAuthenticated && <AIChatbot />}
     </div>
   )
 }

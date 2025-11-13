@@ -62,4 +62,9 @@ export const courseService = {
     const response = await api.post(`/courses/${id}/unpublish`)
     return response.data.course
   },
+
+  async rateAndReview(id: string, data: { rating: number; comment: string }): Promise<Course> {
+    const response = await api.post(`/courses/${id}/rate`, data)
+    return response.data.course
+  },
 }

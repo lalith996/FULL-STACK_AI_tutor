@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useQuery, useMutation } from '@tanstack/react-query'
 import { toast } from 'react-hot-toast'
@@ -13,12 +14,20 @@ import {
   Award,
   Globe,
   BarChart,
+  MessageSquare,
+  Edit,
 } from 'lucide-react'
+import ReviewList from '@/components/reviews/ReviewList'
+import ReviewForm from '@/components/reviews/ReviewForm'
+import StarRating from '@/components/reviews/StarRating'
+import { Review } from '@/types'
 
 const CourseDetailPage = () => {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const { user, isAuthenticated } = useAuthStore()
+  const [showReviewForm, setShowReviewForm] = useState(false)
+  const [editingReview, setEditingReview] = useState<Review | null>(null)
 
   const { data: course, isLoading } = useQuery({
     queryKey: ['course', id],
@@ -49,6 +58,27 @@ const CourseDetailPage = () => {
   const isEnrolled = user?.enrolledCourses?.some(
     (ec: any) => (typeof ec.course === 'string' ? ec.course : ec.course._id) === id
   )
+
+  const userReview = course?.reviews?.find((r: Review) => r.userId === user?._id)
+
+  const handleWriteReview = () => {
+    if (!isAuthenticated) {
+      toast.error('Please login to write a review')
+      navigate('/auth/login')
+      return
+    }
+    if (!isEnrolled) {
+      toast.error('You must be enrolled to write a review')
+      return
+    }
+    setEditingReview(null)
+    setShowReviewForm(true)
+  }
+
+  const handleEditReview = (review: Review) => {
+    setEditingReview(review)
+    setShowReviewForm(true)
+  }
 
   if (isLoading) {
     return (
@@ -232,6 +262,51 @@ const CourseDetailPage = () => {
                 ))}
               </div>
             </div>
+
+            {/* Student Reviews */}
+            <div className="card">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h2 className="text-2xl font-bold mb-2">Student Reviews</h2>
+                  <div className="flex items-center space-x-4">
+                    <div className="flex items-center space-x-2">
+                      <StarRating rating={course.rating.average} size="lg" />
+                      <span className="text-2xl font-bold text-gray-900">
+                        {course.rating.average.toFixed(1)}
+                      </span>
+                    </div>
+                    <span className="text-gray-600">
+                      {course.rating.count} {course.rating.count === 1 ? 'review' : 'reviews'}
+                    </span>
+                  </div>
+                </div>
+
+                {isEnrolled && (
+                  <button
+                    onClick={userReview ? () => handleEditReview(userReview) : handleWriteReview}
+                    className="btn btn-outline flex items-center space-x-2"
+                  >
+                    {userReview ? (
+                      <>
+                        <Edit className="w-5 h-5" />
+                        <span>Edit Review</span>
+                      </>
+                    ) : (
+                      <>
+                        <MessageSquare className="w-5 h-5" />
+                        <span>Write a Review</span>
+                      </>
+                    )}
+                  </button>
+                )}
+              </div>
+
+              <ReviewList
+                reviews={course.reviews || []}
+                courseId={id!}
+                onEditReview={handleEditReview}
+              />
+            </div>
           </div>
 
           {/* Sidebar */}
@@ -267,6 +342,21 @@ const CourseDetailPage = () => {
           </div>
         </div>
       </div>
+
+      {/* Review Form Modal */}
+      {showReviewForm && (
+        <ReviewForm
+          courseId={id!}
+          onClose={() => {
+            setShowReviewForm(false)
+            setEditingReview(null)
+          }}
+          existingReview={editingReview ? {
+            rating: editingReview.rating,
+            comment: editingReview.comment
+          } : undefined}
+        />
+      )}
     </div>
   )
 }
